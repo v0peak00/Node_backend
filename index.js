@@ -23,6 +23,13 @@ app.get('/api/notes/:id', (request, response) => {
   })
 })
 
+app.delete('/api/notes/:id', (request, response) => {
+  const id = request.params.id
+  notes = notes.filter((note) => note.id !== id)
+
+  response.status(204).end()
+})
+
 const generateId = () => {
   const maxId = notes.length > 0 
   ? Math.max(...notes.map(note => Number(note.id)))
