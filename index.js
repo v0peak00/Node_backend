@@ -31,44 +31,64 @@ app.get('/info', (request, response) => {
 })
 
 app.get('/api/persons', (request, response) => {
-  Person.find({}).then((people) => {
+  Person.find({})
+  .then((people) => {
     response.json(people)
   })
 })
 
-app.get('/api/persons/:id', (request, response) => {
-  Person.findById(request.params.id).then((person) => {
-    response.json(person)
+app.get('/api/persons/:id', (request, response, next) => {
+  Person.findById(request.params.id)
+  .then((person) => {
+    if (person) {
+      response.json(person)
+    } else {
+      response.status(404).end()
+    }
   })
-})
-
-app.delete('/api/persons/:id', (request, response) => {
-  const id = request.params.id
-  const person = persons.find((person) => person.id === id)
-  if(person) {
-    persons = persons.filter((person) => person.id !== id)
-    response.status(200).json(person)
-  } else {
-    response.status(404).end()
-  }
+  .catch((error) => next(error))
 })
 
 app.post('/api/persons', (request, response) => {
-  const person = request.body
+  const { name, number } = request.body
   
-  if(!person.name || !person.number) {
+  if(!name || !number) {
     return response.status(400).json({error: "Missing name or number!"})
   } 
-  const dbPerson = new Person({
-    name: person.name,
-    number: person.number
+  const person = new Person({
+    name: name,
+    number: number
   })
 
-  dbPerson.save().then((result) => {
-    console.log("New Person entry created!")
+  person.save().then((result) => {
     response.status(201).json(result)
   })
-  
+})
+
+app.put('/api/persons/:id', (request, response, next) => {
+  const { name, number } = request.body
+
+  Person.findById(request.params.id)
+  .then((person) => {
+    if (!person) {
+      return response.status(404).end()
+    }
+    person.name = name
+    person.nnumber = number
+
+    return person.save().then((updatedPerson) => {
+      response.json(updatedPerson)
+    })
+  })
+  .catch((error) => next(error))
+})
+
+app.delete('/api/persons/:id', (request, response, next) => {
+  Person.findByIdAndDelete(request.params.id)
+  .then((person) => {
+    response.status(200).json(person)
+  })
+  .catch((error) => next(error))
 })
 
 const unknownEndpoint = (request, response) => {
