@@ -67,7 +67,8 @@ app.post('/api/persons', (request, response) => {
 
 app.put('/api/persons/:id', (request, response, next) => {
   const { name, number } = request.body
-
+  console.log("name: " + name)
+  console.log("number: " + number)
   Person.findById(request.params.id)
   .then((person) => {
     if (!person) {
