@@ -20,14 +20,14 @@ app.get('/', (request, response) => {
 })
 
 app.get('/info', (request, response) => {
-  const count = 5
-  const date = new Date(Date.now()).toString()
-
-  response.send(`
-    <div>
-      <p>Phonebook has info for ${count} people </p>
-      <p>${date} </p>
-    </div>`)
+  const count = Person.countDocuments({}).then(count => {
+    const date = new Date(Date.now()).toString()
+    response.send(`
+      <div>
+        <p>Phonebook has info for ${count} people </p>
+        <p>${date} </p>
+      </div>`)
+  })
 })
 
 app.get('/api/persons', (request, response) => {
@@ -67,18 +67,17 @@ app.post('/api/persons', (request, response) => {
 
 app.put('/api/persons/:id', (request, response, next) => {
   const { name, number } = request.body
-  console.log("name: " + name)
-  console.log("number: " + number)
   Person.findById(request.params.id)
   .then((person) => {
     if (!person) {
       return response.status(404).end()
     }
     person.name = name
-    person.nnumber = number
+    person.number = number
 
     return person.save().then((updatedPerson) => {
       response.json(updatedPerson)
+      console.log("backend updated person: " + updatedPerson)
     })
   })
   .catch((error) => next(error))
