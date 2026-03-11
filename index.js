@@ -5,6 +5,18 @@ const Person = require('./models/person')
 
 const app = express()
 
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
+  }
+
+  next(error)
+}
+
 app.use(express.json())
 app.use(express.static('dist'))
 
@@ -49,7 +61,7 @@ app.get('/api/persons/:id', (request, response, next) => {
   .catch((error) => next(error))
 })
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
   const { name, number } = request.body
   
   if(!name || !number) {
@@ -60,9 +72,11 @@ app.post('/api/persons', (request, response) => {
     number: number
   })
 
-  person.save().then((result) => {
+  person.save()
+  .then((result) => {
     response.status(201).json(result)
   })
+  .catch((error) => next(error))
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
@@ -96,6 +110,7 @@ const unknownEndpoint = (request, response) => {
 }
 
 app.use(unknownEndpoint)
+app.use(errorHandler)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
