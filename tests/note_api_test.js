@@ -44,12 +44,12 @@ describe('when there is initially some notes save', () => {
         .expect(200)
         .expect('Content-Type', /application\/json/)
 
-      assert.deepStricEqual(resultNote.body, noteToView)
+      assert.deepStrictEqual(resultNote.body, noteToView)
     })
 
     test('fails with statuscode 404 if note does not exist', async () => {
       const validNonExistingId = helper.nonExistingId()
-      await api.get(`/api/blogs/${validNonExistingId}`.expect(404))
+      await api.get(`/api/blogs/${validNonExistingId}`).expect(404)
     })
   })
 
