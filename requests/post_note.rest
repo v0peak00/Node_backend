@@ -1,7 +1,8 @@
 POST http://localhost:3001/api/notes
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlRlc3RhYWphIiwiaWQiOiI2OWI5MTY5YTMxY2QxYTQxZWVlYzI5ZWUiLCJpYXQiOjE3NzM3MzgzNTl9.CYCuskMC5bb3TwXzuFtZ8LINyucTK3c21HDr2N9pbtY
 
 {
-  "content": "Testing REST client",
+  "content": "SPA's use JWT for authorization",
   "important": false
 }
